@@ -192,7 +192,7 @@ Bellman-Ford animation: group steps by `round` — show a "wave" per round rathe
 Update this as phases complete:
 
 - [x] Phase 1 — Scaffold & Map
-- [ ] Phase 2 — City Dataset & Graph
+- [x] Phase 2 — City Dataset & Graph
 - [ ] Phase 3 — Render Cities on Map
 - [ ] Phase 4 — UI Controls
 - [ ] Phase 5 — Algorithm Implementations
