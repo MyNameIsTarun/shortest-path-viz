@@ -5,72 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="A browser-only visualizer for shortest-path algorithms on a city graph."
+      content="Visualize BFS, Dijkstra, A*, Greedy Best-First, and Bellman-Ford algorithms on a world city graph. Browser-only, no API keys."
     />
     <title>Shortest Path Visualizer</title>
+
+    <!-- Tailwind CSS v3 CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              background: '#0f1117',
-              surface: '#1a1f2e',
-              border: '#2a3142',
-              accent: '#6366f1',
-              'accent-light': '#818cf8',
+              background:    '#0f1117',
+              surface:       '#1a1f2e',
+              border:        '#2a3142',
+              accent:        '#6366f1',
+              'accent-light':'#818cf8',
             },
           },
         },
       };
     </script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body class="bg-background text-slate-100 antialiased">
+
+  <body class="bg-background text-slate-100 antialiased" style="font-family:'Inter',ui-sans-serif,system-ui,sans-serif">
     <div id="app" class="min-h-screen bg-background">
       <main class="flex h-screen w-screen overflow-hidden">
+
+        <!-- ── Left Sidebar (desktop) ── -->
         <aside
-          class="z-10 hidden h-full w-80 shrink-0 border-r border-border bg-surface p-6 shadow-2xl shadow-black/30 md:flex md:flex-col"
+          id="sidebar"
+          class="z-10 hidden h-full w-80 shrink-0 border-r border-border bg-surface
+                 shadow-2xl shadow-black/40 md:flex md:flex-col"
           aria-label="Visualization controls"
         >
-          <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-accent-light">
-              Phase 1
-            </p>
-            <h1 class="mt-3 text-2xl font-semibold tracking-normal text-white">
-              Shortest Path Visualizer
-            </h1>
-            <p class="mt-3 text-sm leading-6 text-slate-400">
-              Map scaffold ready for city graph rendering and algorithm controls.
-            </p>
-          </div>
-
-          <div class="mt-8 border-t border-border pt-6">
-            <h2 class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Controls
-            </h2>
-            <div class="mt-5 space-y-4">
-              <div class="h-10 rounded border border-border bg-background/70"></div>
-              <div class="h-10 rounded border border-border bg-background/70"></div>
-              <div class="h-10 rounded border border-border bg-background/70"></div>
-            </div>
-          </div>
-
-          <div class="mt-auto rounded border border-border bg-background/60 p-4">
-            <p class="text-sm text-slate-400">
-              Leaflet map initialized with CartoDB Dark Matter tiles.
-            </p>
+          <!-- Scrollable content wrapper -->
+          <div id="controls-root" class="flex flex-col flex-1 overflow-y-auto overflow-x-hidden px-5 pt-5 pb-4">
+            <!-- Controls.js renders here -->
           </div>
         </aside>
 
+        <!-- ── Map area ── -->
         <section class="relative h-full min-w-0 flex-1 bg-background" aria-label="World map">
           <div id="map" class="h-full w-full"></div>
+
+          <!-- Mobile top bar (hidden on desktop) -->
           <div
-            class="pointer-events-none absolute left-4 top-4 rounded border border-border bg-surface/90 px-4 py-3 shadow-xl shadow-black/30 md:hidden"
+            class="pointer-events-none absolute left-4 top-4 rounded border border-border
+                   bg-surface/90 px-4 py-3 shadow-xl shadow-black/40 backdrop-blur md:hidden"
           >
-            <p class="text-sm font-semibold text-white">Shortest Path Visualizer</p>
-            <p class="text-xs text-slate-400">Phase 1 map scaffold</p>
+            <p class="text-sm font-bold text-white">Shortest Path Visualizer</p>
+            <p class="text-xs text-slate-400 mt-0.5">Controls available on desktop</p>
           </div>
         </section>
+
       </main>
     </div>
 

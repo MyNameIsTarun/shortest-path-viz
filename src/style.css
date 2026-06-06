@@ -79,3 +79,96 @@ body {
 .spv-frontier circle {
   animation: spv-pulse 1s ease-in-out infinite;
 }
+
+/* ─── Sidebar scrollbar ─────────────────────────────────────────────────────── */
+#controls-root {
+  scrollbar-width: thin;
+  scrollbar-color: #2a3142 transparent;
+}
+#controls-root::-webkit-scrollbar       { width: 4px; }
+#controls-root::-webkit-scrollbar-track { background: transparent; }
+#controls-root::-webkit-scrollbar-thumb { background: #2a3142; border-radius: 2px; }
+
+/* ─── Field labels ──────────────────────────────────────────────────────────── */
+.spv-field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+/* ─── Custom range slider ───────────────────────────────────────────────────── */
+.spv-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  /* gradient is set dynamically by JS via inline style */
+  background: #2a3142;
+  outline: none;
+  cursor: pointer;
+}
+.spv-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #818cf8;
+  border: 2px solid #1a1f2e;
+  box-shadow: 0 0 6px rgba(99,102,241,0.6);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.spv-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #818cf8;
+  border: 2px solid #1a1f2e;
+  box-shadow: 0 0 6px rgba(99,102,241,0.6);
+  cursor: pointer;
+}
+.spv-slider:hover::-webkit-slider-thumb {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(99,102,241,0.8);
+}
+
+/* ─── Stats cards ───────────────────────────────────────────────────────────── */
+.spv-stat-card {
+  background: #0f1117;
+  border: 1px solid #2a3142;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.spv-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #475569;
+  margin-bottom: 2px;
+}
+.spv-stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e2e8f0;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Autocomplete dropdown scrollbar ──────────────────────────────────────── */
+.ac-dropdown {
+  scrollbar-width: thin;
+  scrollbar-color: #2a3142 transparent;
+}
+.ac-dropdown::-webkit-scrollbar       { width: 4px; }
+.ac-dropdown::-webkit-scrollbar-track { background: transparent; }
+.ac-dropdown::-webkit-scrollbar-thumb { background: #2a3142; border-radius: 2px; }
+
+/* ─── Algo dropdown transition ──────────────────────────────────────────────── */
+#algo-chevron {
+  transition: transform 0.2s ease;
+}
