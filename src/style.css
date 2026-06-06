@@ -44,3 +44,38 @@ body {
 .leaflet-control-attribution a {
   color: #c4b5fd;
 }
+
+/* ─── City-node tooltip ────────────────────────────────────────────────────── */
+.spv-tooltip {
+  background: #1a1f2e !important;
+  border: 1px solid #2a3142 !important;
+  border-radius: 6px !important;
+  padding: 6px 10px !important;
+  color: #f1f5f9 !important;
+  font-size: 12px !important;
+  line-height: 1.6 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.spv-tooltip::before {
+  border-top-color: #2a3142 !important;
+}
+
+/* Leaflet tooltip arrow */
+.leaflet-tooltip-top.spv-tooltip::before {
+  border-top-color: #2a3142 !important;
+}
+
+/* ─── Pulse animation for frontier nodes ───────────────────────────────────── */
+@keyframes spv-pulse {
+  0%   { stroke-opacity: 1;   stroke-width: 2px; }
+  50%  { stroke-opacity: 0.4; stroke-width: 6px; }
+  100% { stroke-opacity: 1;   stroke-width: 2px; }
+}
+
+.spv-frontier path,
+.spv-frontier circle {
+  animation: spv-pulse 1s ease-in-out infinite;
+}
