@@ -5,6 +5,24 @@ import { initMap }  from './map/mapInit.js';
 import { Graph }    from './core/graph.js';
 import { Renderer } from './map/renderer.js';
 import { Controls } from './ui/controls.js';
+import { Animator } from './core/animator.js';
+import { bfs } from './algorithms/bfs.js';
+import { dijkstra } from './algorithms/dijkstra.js';
+import { astar } from './algorithms/astar.js';
+import { greedy } from './algorithms/greedy.js';
+import { bellmanFord } from './algorithms/bellman-ford.js';
+import { ALGO_LIST } from './ui/algoInfo.js';
+import { showError, showWarning } from './ui/toast.js';
+
+const ALGORITHMS = {
+  'bfs': bfs,
+  'dijkstra': dijkstra,
+  'astar': astar,
+  'greedy': greedy,
+  'bellman-ford': bellmanFord
+};
+
+let currentAnimator = null;
 
 // ─── Init map ─────────────────────────────────────────────────────────────────
 const map = initMap('map');
@@ -41,7 +59,70 @@ controlsRoot.addEventListener('targetCleared', () => {
   if (controls.sourceId) renderer.setSource(controls.sourceId);
 });
 
+// ─── Animator Control ──────────────────────────────────────────────────────────
+controlsRoot.addEventListener('visualize', (e) => {
+  const { sourceId, targetId, algorithm, speedMs } = e.detail;
+
+  if (currentAnimator) {
+    currentAnimator.reset();
+  }
+
+  renderer.clear();
+  renderer.renderBase();
+  renderer.setSource(sourceId);
+  renderer.setTarget(targetId);
+  controls.resetStats();
+  controls.setButtonState('running');
+
+  const algoFn = ALGORITHMS[algorithm];
+  if (!algoFn) return;
+
+  const startMs = performance.now();
+  const result = algoFn(graph, sourceId, targetId, graph.nodeMap);
+  const calcTimeMs = performance.now() - startMs;
+
+  const meta = ALGO_LIST.find(a => a.id === algorithm);
+  const algoColor = meta ? meta.color : '#6366f1';
+
+  currentAnimator = new Animator(
+    { steps: result.steps, path: result.path, algoColor },
+    renderer,
+    speedMs,
+    (patch) => {
+      controls.updateStats({ ...patch, timeMs: calcTimeMs });
+    },
+    () => {
+      controls.setButtonState('idle');
+      if (result.path.length === 0) {
+        showError('No path found between these cities.');
+      } else if (result.capped) {
+        showWarning('Skipping to result...');
+      }
+    }
+  );
+
+  currentAnimator.play();
+});
+
+controlsRoot.addEventListener('pause', () => {
+  if (currentAnimator) {
+    currentAnimator.pause();
+    controls.setButtonState('paused');
+  }
+});
+
+controlsRoot.addEventListener('resume', () => {
+  if (currentAnimator) {
+    currentAnimator.play();
+    controls.setButtonState('running');
+  }
+});
+
 controlsRoot.addEventListener('reset', () => {
+  if (currentAnimator) {
+    currentAnimator.reset();
+    currentAnimator = null;
+  }
   renderer.clear();
   controls.setButtonState('idle');
   controls.resetStats();
@@ -50,18 +131,10 @@ controlsRoot.addEventListener('reset', () => {
   if (controls.targetId) renderer.setTarget(controls.targetId);
 });
 
-// Visualize / Pause / Resume will be wired in Phase 6 (Animator)
-controlsRoot.addEventListener('visualize', (e) => {
-  console.log('[Phase 4] Visualize triggered:', e.detail);
-  // Phase 6: run algorithm + start animator
-});
-
-controlsRoot.addEventListener('algoChanged', (e) => {
-  console.log('[Phase 4] Algorithm changed:', e.detail.algorithm);
-});
-
 controlsRoot.addEventListener('speedChanged', (e) => {
-  console.log('[Phase 4] Speed changed:', e.detail.speedMs, 'ms');
+  if (currentAnimator) {
+    currentAnimator.setSpeed(e.detail.speedMs);
+  }
 });
 
 // ─── Map click to select cities ───────────────────────────────────────────────

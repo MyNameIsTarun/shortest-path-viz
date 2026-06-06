@@ -52,6 +52,13 @@ export function bellmanFord(graph, sourceId, targetId, _nodesMap) {
         if (dFrom === Infinity) continue;
 
         const newDist = dFrom + weight;
+
+        // Optimization for visualization: since all edge weights are positive,
+        // we can stop exploring paths that are already longer than our best
+        // known path to the target. This bounds the search and stops it from
+        // exploring the entire world.
+        if (newDist > dist.get(targetId)) continue;
+
         if (newDist < dist.get(to)) {
           dist.set(to, newDist);
           parent.set(to, from);
