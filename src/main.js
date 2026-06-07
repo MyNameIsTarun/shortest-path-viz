@@ -12,7 +12,7 @@ import { astar } from './algorithms/astar.js';
 import { greedy } from './algorithms/greedy.js';
 import { bellmanFord } from './algorithms/bellman-ford.js';
 import { ALGO_LIST } from './ui/algoInfo.js';
-import { showError, showWarning } from './ui/toast.js';
+import { showError, showWarning, showInfo } from './ui/toast.js';
 
 const ALGORITHMS = {
   'bfs': bfs,
@@ -142,6 +142,23 @@ controlsRoot.addEventListener('speedChanged', (e) => {
   }
 });
 
+controlsRoot.addEventListener('share', (e) => {
+  const { sourceId, targetId, algorithm } = e.detail;
+  const url = new URL(window.location.href);
+  if (sourceId) url.searchParams.set('from', sourceId);
+  else url.searchParams.delete('from');
+  if (targetId) url.searchParams.set('to', targetId);
+  else url.searchParams.delete('to');
+  url.searchParams.set('algo', algorithm);
+  
+  window.history.replaceState({}, '', url);
+  navigator.clipboard.writeText(url.toString()).then(() => {
+    showInfo('URL copied to clipboard!');
+  }).catch(() => {
+    showError('Failed to copy URL');
+  });
+});
+
 // ─── Map click to select cities ───────────────────────────────────────────────
 map.on('click', () => {
   // Close any open autocomplete dropdowns
@@ -173,6 +190,34 @@ drawerHandle.addEventListener('click', () => {
     sidebar.classList.remove('translate-y-0');
   }
 });
+
+// ─── Initial State from URL ───────────────────────────────────────────────────
+const urlParams = new URLSearchParams(window.location.search);
+const fromParam = urlParams.get('from');
+const toParam = urlParams.get('to');
+const algoParam = urlParams.get('algo');
+
+if (algoParam) {
+  controls.setAlgorithm(algoParam);
+}
+
+let shouldAutoStart = false;
+if (fromParam) {
+  controls.setSource(fromParam);
+  shouldAutoStart = true;
+}
+if (toParam) {
+  controls.setTarget(toParam);
+} else {
+  shouldAutoStart = false;
+}
+
+if (shouldAutoStart && fromParam !== toParam) {
+  // Small delay to ensure UI updates are complete before starting
+  setTimeout(() => {
+    document.getElementById('btn-visualize')?.click();
+  }, 100);
+}
 
 // ─── Expose for dev-console testing ──────────────────────────────────────────
 window.__spv = { map, graph, renderer, controls };

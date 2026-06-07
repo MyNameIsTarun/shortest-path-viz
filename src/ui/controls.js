@@ -76,6 +76,19 @@ export class Controls {
   }
 
   /**
+   * Programmatically set algorithm.
+   * @param {string} id
+   */
+  setAlgorithm(id) {
+    const meta = ALGO_LIST.find(a => a.id === id);
+    if (!meta) return;
+    this._algoId = id;
+    this._syncAlgoButton(id);
+    this._algoInfo?.setAlgorithm(id);
+    this._emit('algoChanged', { algorithm: id });
+  }
+
+  /**
    * Switch button state: 'idle' | 'running' | 'paused'
    * @param {'idle'|'running'|'paused'} state
    */
@@ -100,8 +113,21 @@ export class Controls {
     this._root.innerHTML = `
       <!-- ── Header ── -->
       <div class="mb-6">
-        <p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-indigo-400">Pathfinder</p>
-        <h1 class="mt-1.5 text-xl font-bold text-white leading-tight">Shortest Path<br>Visualizer</h1>
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-indigo-400">Pathfinder</p>
+            <h1 class="mt-1.5 text-xl font-bold text-white leading-tight">Shortest Path<br>Visualizer</h1>
+          </div>
+          <button id="btn-share" class="p-2 mt-1 text-slate-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Share current state">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
+        </div>
         <p class="mt-1.5 text-xs text-slate-500 leading-relaxed">
           Visualize BFS, Dijkstra, A*, Greedy &amp; Bellman-Ford on a world city graph.
         </p>
@@ -290,6 +316,15 @@ export class Controls {
 
     // Algorithm dropdown
     this._bindAlgoDropdown();
+
+    // Share button
+    document.getElementById('btn-share')?.addEventListener('click', () => {
+      this._emit('share', {
+        sourceId: this._sourceId,
+        targetId: this._targetId,
+        algorithm: this._algoId,
+      });
+    });
 
     // Speed slider
     const slider = document.getElementById('speed-slider');
