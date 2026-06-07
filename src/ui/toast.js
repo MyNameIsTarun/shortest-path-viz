@@ -11,10 +11,12 @@ function getContainer() {
   Object.assign(_container.style, {
     position:      'fixed',
     top:           '1rem',
-    right:         '1rem',
+    left:          '50%',
+    transform:     'translateX(-50%)',
     zIndex:        '9999',
     display:       'flex',
     flexDirection: 'column',
+    alignItems:    'center',
     gap:           '0.5rem',
     pointerEvents: 'none',
     maxWidth:      '360px',
@@ -49,7 +51,7 @@ function showToast(message, variant = 'info', durationMs = 3500) {
     pointerEvents:   'auto',
     cursor:          'pointer',
     opacity:         '0',
-    transform:       'translateX(1rem)',
+    transform:       'translateY(-1rem)',
     transition:      'opacity 0.22s ease, transform 0.22s ease',
     fontFamily:      'Inter, ui-sans-serif, system-ui, sans-serif',
     fontSize:        '13px',
@@ -77,7 +79,7 @@ function showToast(message, variant = 'info', durationMs = 3500) {
   // Animate in
   requestAnimationFrame(() => {
     toast.style.opacity   = '1';
-    toast.style.transform = 'translateX(0)';
+    toast.style.transform = 'translateY(0)';
   });
 
   // Close on click
@@ -90,7 +92,7 @@ function showToast(message, variant = 'info', durationMs = 3500) {
   function dismiss(el) {
     clearTimeout(el._spvTimer);
     el.style.opacity   = '0';
-    el.style.transform = 'translateX(1rem)';
+    el.style.transform = 'translateY(-1rem)';
     setTimeout(() => el.remove(), 250);
   }
 }

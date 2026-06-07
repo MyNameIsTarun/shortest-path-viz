@@ -51,8 +51,9 @@ export class Renderer {
     /** @type {L.Polyline[]} */
     this._edgeLines = [];
 
-    /** @type {L.Polyline | null} */
-    this._finalPathLine = null;
+    /** @type {L.Polyline[]} */
+    this._finalPathLines = [];
+    this._finalPathTimer = null;
 
     /** Track which node is currently source / target */
     this._sourceId = null;
@@ -178,20 +179,29 @@ export class Renderer {
     this._clearFinalPath();
     if (nodeIds.length < 2) return;
 
-    const latlngs = nodeIds.map((id) => {
-      const n = this._graph.getNode(id);
-      return [n.lat, n.lng];
-    });
-
-    this._finalPathLine = L.polyline(latlngs, {
-      color:   FINAL_PATH_COLOR,
-      weight:  FINAL_PATH_WEIGHT,
-      opacity: 0.95,
-      // Animated dash-draw effect via CSS custom property set after add
-    }).addTo(this._map);
-
-    // Animate the path drawing using a stroke-dashoffset trick on SVG
-    this._animateFinalPath();
+    let i = 0;
+    const drawNext = () => {
+      if (i >= nodeIds.length - 1) return;
+      
+      const idA = nodeIds[i];
+      const idB = nodeIds[i + 1];
+      const nA = this._graph.getNode(idA);
+      const nB = this._graph.getNode(idB);
+      
+      if (nA && nB) {
+        const line = L.polyline([[nA.lat, nA.lng], [nB.lat, nB.lng]], {
+          color:   FINAL_PATH_COLOR,
+          weight:  FINAL_PATH_WEIGHT,
+          opacity: 0.95,
+        }).addTo(this._map);
+        this._finalPathLines.push(line);
+      }
+      
+      i++;
+      this._finalPathTimer = setTimeout(drawNext, 100);
+    };
+    
+    drawNext();
   }
 
   /** Reset all nodes and edges back to base state. */
@@ -297,36 +307,14 @@ export class Renderer {
   }
 
   _clearFinalPath() {
-    if (this._finalPathLine) {
-      this._finalPathLine.remove();
-      this._finalPathLine = null;
+    if (this._finalPathTimer) {
+      clearTimeout(this._finalPathTimer);
+      this._finalPathTimer = null;
     }
-  }
-
-  _animateFinalPath() {
-    if (!this._finalPathLine) return;
-
-    // Access the underlying SVG path element
-    requestAnimationFrame(() => {
-      const el = this._finalPathLine.getElement?.();
-      if (!el) return;
-
-      // The element might be a <path> or a <g> containing paths
-      const pathEl = el.tagName === 'path' ? el : el.querySelector('path');
-      if (!pathEl) return;
-
-      const len = pathEl.getTotalLength?.() ?? 0;
-      if (!len) return;
-
-      pathEl.style.strokeDasharray  = len;
-      pathEl.style.strokeDashoffset = len;
-      pathEl.style.transition = 'stroke-dashoffset 1.2s ease-in-out';
-
-      // Trigger animation on next frame
-      requestAnimationFrame(() => {
-        pathEl.style.strokeDashoffset = '0';
-      });
-    });
+    for (const line of this._finalPathLines) {
+      line.remove();
+    }
+    this._finalPathLines = [];
   }
 
   _baseNodeStyle() {

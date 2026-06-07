@@ -67,6 +67,11 @@ controlsRoot.addEventListener('visualize', (e) => {
     currentAnimator.reset();
   }
 
+  if (sourceId === targetId) {
+    showError('Source and destination must be different.');
+    return;
+  }
+
   renderer.clear();
   renderer.renderBase();
   renderer.setSource(sourceId);
@@ -143,6 +148,30 @@ map.on('click', () => {
   document.getElementById('ac-list-source')?.classList.add('hidden');
   document.getElementById('ac-list-target')?.classList.add('hidden');
   document.getElementById('algo-list')?.classList.add('hidden');
+  
+  // Close mobile drawer if open
+  if (isDrawerOpen && window.innerWidth < 768) {
+    isDrawerOpen = false;
+    sidebar.classList.add('translate-y-[calc(100%-48px)]');
+    sidebar.classList.remove('translate-y-0');
+  }
+});
+
+// ─── Mobile Drawer Control ────────────────────────────────────────────────────
+const sidebar = document.getElementById('sidebar');
+const drawerHandle = document.getElementById('drawer-handle');
+
+let isDrawerOpen = false;
+
+drawerHandle.addEventListener('click', () => {
+  isDrawerOpen = !isDrawerOpen;
+  if (isDrawerOpen) {
+    sidebar.classList.remove('translate-y-[calc(100%-48px)]');
+    sidebar.classList.add('translate-y-0');
+  } else {
+    sidebar.classList.add('translate-y-[calc(100%-48px)]');
+    sidebar.classList.remove('translate-y-0');
+  }
 });
 
 // ─── Expose for dev-console testing ──────────────────────────────────────────
